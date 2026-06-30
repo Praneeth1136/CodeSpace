@@ -13,11 +13,13 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.7.3",
-    "morgan": "^1.11.0"
+    "morgan": "^1.11.0",
+    "uuid": "^14.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
