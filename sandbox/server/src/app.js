@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
-import { createPod } from "./kubernetes/pod.js";
+import { createPod, waitForPodReady } from "./kubernetes/pod.js";
 import { createService } from "./kubernetes/service.js";
 import { v7 as uuidv7 } from "uuid";
 
@@ -26,6 +26,9 @@ app.post("/api/sandbox/start",async(req,res)=>{
     try{
         const pod = await createPod(sandboxId);
         const service = await createService(sandboxId);
+
+        // Wait for the pod to be fully Running before returning
+        await waitForPodReady(sandboxId);
 
         res.status(200).json({
             message:"   Container Created successfully",

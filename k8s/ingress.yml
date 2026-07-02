@@ -10,7 +10,7 @@ spec:
     - http:
         paths:
         - pathType: Prefix
-          path: "/api/sandbox/health"
+          path: "/api/sandbox"
           backend:
             service:
               name: sandbox-service
@@ -19,6 +19,18 @@ spec:
 
 
     - host: "*.preview.localhost"
+      http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: router-service
+              port: 
+                number: 3000
+
+
+    - host: "*.agent.localhost"
       http:
         paths:
         - pathType: Prefix
