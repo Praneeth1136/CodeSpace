@@ -17,6 +17,14 @@ spec:
               port: 
                 number: 80
 
+        - pathType: Prefix
+          path: "/api/ai"
+          backend:
+            service:
+              name: ai-service
+              port: 
+                    number: 80
+
 
     - host: "*.preview.localhost"
       http:
