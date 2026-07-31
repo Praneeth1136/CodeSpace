@@ -38,6 +38,7 @@ build:
 
 manifests:
   rawYaml:
+    - k8s/ai-secret.yml
     - k8s/ai-deployment.yml
     - k8s/ai.service.yml
     - k8s/sandbox-deployment.yml
@@ -45,4 +46,13 @@ manifests:
     - k8s/ingress.yml
     - k8s/router-deployment.yml
     - k8s/router.service.yml
-    # - k8s/rbac.yml
+    - k8s/rbac-sa.yml
+    - k8s/rbac-role.yml
+    - k8s/rbac-rb.yml
+
+# Add this at the bottom of your skaffold.yml
+portForward:
+  - resourceType: service
+    resourceName: sandbox-service
+    port: 80
+    localPort: 3000

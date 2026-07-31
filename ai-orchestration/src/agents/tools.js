@@ -3,16 +3,12 @@ import { tool } from "langchain";
 import * as z from "zod"
 
 export const listFiles = tool(
-    async ({ }) => {
+    async ({ sandboxId }) => {
         console.log("===================");
         console.log("Using list Files Tool");
         console.log("===================");
         try {
-            const response = await axios.get("http://127.0.0.1/list-files", {
-                headers: {
-                    'Host': '019f2f12-af8f-750e-b4d3-54c36f208053.agent.localhost'
-                }
-            });
+            const response = await axios.get(`http://sandbox-service-${sandboxId}:3000/list-files`);
 
             console.log("===================");
             console.log("Response from list files tool:", response.data.files);
@@ -31,17 +27,14 @@ export const listFiles = tool(
 )
 
 export const readFiles = tool(
-    async ({ files }) => {
+    async ({ sandboxId, files }) => {
 
         console.log("===================");
         console.log("Using Read Files Tool");
         console.log("===================");
 
         try {
-            const response = await axios.get("http://127.0.0.1/read-files", {
-                headers: {
-                    'Host': '019f2f12-af8f-750e-b4d3-54c36f208053.agent.localhost'
-                },
+            const response = await axios.get(`http://sandbox-service-${sandboxId}:3000/read-files`, {
                 params: {
                     files: files.join(","),
                 }
@@ -58,6 +51,7 @@ export const readFiles = tool(
     name: "read_files",
     description: "Read files from the sandbox",
     schema: z.object({
+        sandboxId: z.string().describe("ID of the sandbox"),
         files: z.array(z.string()).describe("Array of file paths to read"),
     })
 }
@@ -65,19 +59,15 @@ export const readFiles = tool(
 
 
 export const createFiles = tool(
-    async ({ file }) => {
+    async ({ sandboxId, file }) => {
 
         console.log("===================");
         console.log("Using create Files Tool");
         console.log("===================");
 
         try {
-            const response = await axios.post("http://127.0.0.1/create-files", {
+            const response = await axios.post(`http://sandbox-service-${sandboxId}:3000/create-files`, {
                 files: file,
-            }, {
-                headers: {
-                    'Host': '019f2f12-af8f-750e-b4d3-54c36f208053.agent.localhost'
-                }
             });
 
             console.log("===================");
@@ -92,6 +82,7 @@ export const createFiles = tool(
     name: "create_files",
     description: "Create files in the sandbox",
     schema: z.object({
+        sandboxId: z.string().describe("ID of the sandbox"),
         file: z.array(z.object({
             file: z.string().describe("Path to the file to create"),
             content: z.string().describe("Content of the file"),
@@ -102,19 +93,15 @@ export const createFiles = tool(
 
 
 export const updateFiles = tool(
-    async ({ updates }) => {
+    async ({ sandboxId, updates }) => {
 
         console.log("===================");
         console.log("Using update Files Tool");
         console.log("===================");
 
         try {
-            const response = await axios.patch("http://127.0.0.1/update-files", {
+            const response = await axios.patch(`http://sandbox-service-${sandboxId}:3000/update-files`, {
                 updates: updates,
-            }, {
-                headers: {
-                    'Host': '019f2f12-af8f-750e-b4d3-54c36f208053.agent.localhost'
-                }
             });
 
             console.log("===================");
@@ -129,6 +116,7 @@ export const updateFiles = tool(
     name: "update_files",
     description: "Update files in the sandbox",
     schema: z.object({
+        sandboxId: z.string().describe("ID of the sandbox"),
         updates: z.array(z.object({
             file: z.string().describe("Path to the file to update"),
             content: z.string().describe("Content of the file"),
