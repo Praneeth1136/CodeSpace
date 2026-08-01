@@ -4,23 +4,14 @@ import { listFiles, readFiles, updateFiles } from "./tools.js";
 import { createAgent } from "langchain";
 
 const model = new ChatMistralAI({
-    model: "mistral-large-latest",
+    model: "mistral-small-latest",
     apiKey: process.env.MISTRAL_API_KEY,
     temperature: 0.7,
     maxRetries: 2,
     timeout: 120000,
 })
 
-// const result = await agent.invoke({
-//     messages: [
-//         {
-//             role: "user",
-//             content: "build snake game in home page app.jsx"
-//         }
-//     ]
-// });
-// const finalMessage = result.messages[result.messages.length - 1];
-// console.log("\nAgent Output:\n" + finalMessage.content);
+
 
 const agent = (createAgent({
     model,
