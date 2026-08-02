@@ -2,8 +2,21 @@ import express from "express";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
+import {Server} from "socket.io";
+import http from "http";
+import pty from "node-pty";
+import os from "os";
 
 const app = express();
+
+const httpServer = http.createServer(app);
+
+const io = new Server(httpServer,{
+    cors:{
+        origin:"*",
+        methods:["GET","POST","PATCH"],
+    },
+});
 
 const WORKING_DIR = "/workspace"
 
@@ -15,7 +28,45 @@ app.get("/", (req,res) => {
     res.send("Agent is running");
 });
 
+let ptyProcess = null;
 
+app.get('/spawn', (req, res) => {
+    const sandboxId = req.query.sandboxId;
+    if (!sandboxId) {
+        return res.status(400).json({ message: 'Sandbox ID is required' });
+    }
+    
+    // Spawns a basic bash shell inside the container
+    ptyProcess = pty.spawn('bash', [], {
+        name: 'xterm-color',
+        cols: 80,
+        rows: 30,
+        cwd: process.env.HOME,
+        env: process.env
+    });
+
+    ptyProcess.onData((data)=>{
+        io.emit('terminal-output',data);
+    });
+
+    ptyProcess.onExit(({exitCode, signal}) => {
+        console.log("Terminal closed with exit code:",exitCode,signal);
+    });
+    
+    res.status(200).json({ message: "Terminal spawned" });
+});
+
+io.on("connection",(socket)=>{
+    console.log(socket.id,"user connected");
+
+    socket.on('terminal-input',(data)=>{
+        if(ptyProcess) ptyProcess.write(data);
+    })
+
+    socket.on("disconnect",()=>{
+        console.log("user disconnected");
+    });
+});
 
 app.get("/list-files", async (req, res) => {
 
@@ -111,6 +162,7 @@ app.patch("/update-files", async (req, res) => {
     const results = await Promise.all(updates.map(async (update) => {
         try {
             const { file, content } = update;
+
             if (!file) throw new Error("Missing 'file' property in update object.");
             const filePath = path.join(WORKING_DIR, file);
 
@@ -176,4 +228,4 @@ app.post("/create-files", async (req, res) => {
 
 
 
-export default app;
+export default httpServer;

@@ -3,15 +3,30 @@ import agent from "../agents/code.agent.js";
 
 const agentRouter  = Router();
 
+
 agentRouter.post("/invoke",async(req,res)=>{
     try{
         const{message, sandboxId} = req.body;
-        const response = await agent.invoke({messages : [{
+        res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    });
+        const stream = await agent.streamEvents({messages : [{
             role:"user",
             content: `[Sandbox ID: ${sandboxId || "none"}]\n\n${message}`,
-        }]});
-        console.log(response);
-        res.json({response});
+        }]},
+    {
+        version: "v2",
+        context:{
+            sandboxId
+        }
+    });
+    for await(const chunk of stream){
+        res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+    }
+    res.end();
+
 
     }catch(error){
         console.log("Error invoking agent:",error);
