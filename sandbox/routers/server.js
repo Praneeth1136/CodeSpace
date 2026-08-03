@@ -42,29 +42,29 @@ app.get("/api/status/readyz",(req,res)=>{
 const proxies = {};
 const agentProxies = {};
 
-function getProxy(sandboxId){
-    const target = `http://sandbox-service-${sandboxId}`
+function getProxy(sandboxId) {
+    const target = `http://sandbox-service-${sandboxId}:80`;
 
-    if(!proxies[sandboxId]){
+    if (!proxies[sandboxId]) {
         proxies[sandboxId] = createProxyMiddleware({
-            target:target,
-            changeOrigin:true,
-            ws:true
-        })
+            target,
+            changeOrigin: true
+        });
     }
+
     return proxies[sandboxId];
 }
 
-function getAgentProxy(sandboxId){
-    const target = `http://sandbox-service-${sandboxId}:3000`
+function getAgentProxy(sandboxId) {
+    const target = `http://sandbox-service-${sandboxId}:3000`;
 
-    if(!agentProxies[sandboxId]){
+    if (!agentProxies[sandboxId]) {
         agentProxies[sandboxId] = createProxyMiddleware({
-            target:target,
-            changeOrigin:true,
-            ws:true
-        })
+            target,
+            changeOrigin: true
+        });
     }
+
     return agentProxies[sandboxId];
 }
 
@@ -94,31 +94,69 @@ app.use(async (req, res, next) => {
 // Create the HTTP server explicitly
 const server = http.createServer(app);
 
+// server.on('upgrade', (req, socket, head) => {
+//     const host = req.headers.host;
+//     if (!host) { socket.destroy(); return; }
+
+//     // Prevent EPIPE and connection-reset errors from crashing the process
+//     // during the active piped session (after ws() Promise has resolved)
+//     socket.on('error', () => socket.destroy());
+
+//     const sandboxId = host.split('.')[ 0 ];
+//     let type = '';
+    
+//     if (host.includes('agent')) type = 'agent';
+//     else if (host.includes('preview')) type = 'preview';
+
+//     console.log(`WS upgrade request: ${host}, sandboxId: ${sandboxId}, type: ${type}`);
+
+//     if (type === 'agent') {
+//         wsProxy.ws(req, socket, { target: `http://sandbox-service-${sandboxId}:3000` }, head)
+//             .catch(() => socket.destroy());
+//     } else if (type === 'preview') {
+//         wsProxy.ws(req, socket, { target: `http://sandbox-service-${sandboxId}` }, head)
+//             .catch(() => socket.destroy());
+//     } else {
+//         socket.destroy();
+//     }
+// });
+
 server.on('upgrade', (req, socket, head) => {
     const host = req.headers.host;
-    if (!host) { socket.destroy(); return; }
 
-    // Prevent EPIPE and connection-reset errors from crashing the process
-    // during the active piped session (after ws() Promise has resolved)
-    socket.on('error', () => socket.destroy());
-
-    const sandboxId = host.split('.')[ 0 ];
-    let type = '';
-    
-    if (host.includes('agent')) type = 'agent';
-    else if (host.includes('preview')) type = 'preview';
-
-    console.log(`WS upgrade request: ${host}, sandboxId: ${sandboxId}, type: ${type}`);
-
-    if (type === 'agent') {
-        wsProxy.ws(req, socket, { target: `http://sandbox-service-${sandboxId}:3000` }, head)
-            .catch(() => socket.destroy());
-    } else if (type === 'preview') {
-        wsProxy.ws(req, socket, { target: `http://sandbox-service-${sandboxId}` }, head)
-            .catch(() => socket.destroy());
-    } else {
+    if (!host) {
         socket.destroy();
+        return;
     }
+
+    const sandboxId = host.split('.')[0];
+
+    let target;
+
+    if (host.includes('.agent.')) {
+        target = `http://sandbox-service-${sandboxId}:3000`;
+    } 
+    else if (host.includes('.preview.')) {
+        target = `http://sandbox-service-${sandboxId}:80`;
+    } 
+    else {
+        socket.destroy();
+        return;
+    }
+
+    console.log(
+        `WS upgrade: ${host} -> ${target}`
+    );
+
+    wsProxy.ws(
+        req,
+        socket,
+        {
+            target,
+            changeOrigin: true
+        },
+        head
+    );
 });
 
 export default server; // export server, not app
