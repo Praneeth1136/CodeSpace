@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Background ── */
+  --color-bg-base: #0d0d0e;
+  --color-bg-panel: #151517;
+  --color-bg-surface: #1a1a1d;
+  --color-bg-elevated: #1f1f22;
+  --color-bg-hover: #232326;
+
+  /* ── Borders ── */
+  --color-border-default: #232326;
+  --color-border-subtle: #1c1c1f;
+  --color-border-active: #3a3a3e;
+
+  /* ── Text ── */
+  --color-text-primary: #e8e6e2;
+  --color-text-secondary: #b0b0b5;
+  --color-text-muted: #8a8a8f;
+  --color-text-faint: #5a5a5f;
+
+  /* ── Accent (amber) ── */
+  --color-accent: #e0a34e;
+  --color-accent-dim: rgba(224, 163, 78, 0.15);
+  --color-accent-hover: #eab566;
+
+  /* ── Semantic ── */
+  --color-success: #7ba98a;
+  --color-error: #c96a5c;
+  --color-info: #6a9fc9;
+  --color-warning: #d4a843;
+
+  /* ── Fonts ── */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", "Consolas", monospace;
+}
+
+/* ── Base resets ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ── Scrollbar styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a3e;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4e;
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: rgba(224, 163, 78, 0.3);
+  color: #e8e6e2;
+}
+
+/* ── xterm.js overrides ── */
+.xterm {
+  padding: 8px;
+}
+
+.xterm-viewport::-webkit-scrollbar {
+  width: 6px;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb {
+  background: #3a3a3e;
+  border-radius: 3px;
+}
+
+/* ── Toast animations ── */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ── Pulse for loading states ── */
+@keyframes pulse-amber {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

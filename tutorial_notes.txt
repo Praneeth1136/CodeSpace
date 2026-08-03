@@ -1,0 +1,94 @@
+http://localhost/api/sandbox/start
+
+this appi will create an sandbox and return data like this
+
+{
+    "message": "Sandbox environment created successfully",
+    "sandboxId": "019e31af-1e2a-70af-b4af-de437c588854",
+    "previewUrl": "http://019e31af-1e2a-70af-b4af-de437c588854.preview.localhost" // use iframe for this preview url
+}
+
+this API GET http://019e31af-1e2a-70af-b4af-de437c588854.agent.localhost/list-files
+
+{
+    "message": "Files listed successfully",
+    "files": [
+        ".dockerignore",
+        ".gitignore",
+        "README.md",
+        "dockerfile",
+        "eslint.config.js",
+        "index.html",
+        "package-lock.json",
+        "package.json",
+        "public/favicon.svg",
+        "public/icons.svg",
+        "src/App.css",
+        "src/App.jsx",
+        "src/assets/hero.png",
+        "src/assets/react.svg",
+        "src/assets/vite.svg",
+        "src/index.css",
+        "src/main.jsx",
+        "vite.config.js"
+    ]
+}
+
+GET http://019e31af-1e2a-70af-b4af-de437c588854.agent.localhost/read-files?files=src/App.css
+
+{
+    "message": "File contents",
+    "files": [
+        {
+            "/src/App.css": ".counter {\n  font-size: 16px;\n  padding: 5px 10px;\n  border-radius: 5px;\n"
+        }
+    ]
+}
+
+PATCH http://019e2739-bc90-7502-aafc-23850483cdbe.agent.localhost/update-files
+
+{
+    "updates": [
+        {
+            "file": "src/App.css",
+            "content": "\n/* Light theme styles */\n\n\n\nbody {\n"
+        }
+    ]
+}
+
+http://localhost/api/ai/invoke
+
+POST http://localhost/api/ai/invoke
+
+req.body = {
+    "message": "make the games in dark theme with color red",
+    "projectId": "019e315f-9565-712b-84e6-8dc26ac6aa9d"
+}
+
+response will be in SSE
+
+(empty)
+21:42:29.636
+Files updated successfully.
+21:42:29.628
+(empty)
+21:42:29.608
+Updating files...src/index.css,src/components/GameSelector.css,src/components/TicTacToe.css,src/components/SnakeGame.css
+21:42:29.599
+(empty)
+21:41:37.971
+Files read successfully.
+21:41:37.962
+(empty)
+21:41:37.883
+Reading files...src/index.css,src/App.jsx,src/components/GameSelector.jsx,src/components/TicTacToe.jsx,src/components/SnakeGame.jsx
+21:41:37.877
+(empty)
+21:41:35.891
+
+
+then we have a socket.io url
+
+019e31af-1e2a-70af-b4af-de437c588854.agent.localhost // use xterm js for terminal on the frontend
+
+with event name "terminal-input" for terminal input and "terminal-output" for terminal output
