@@ -44,8 +44,6 @@ build:
 
 manifests:
   rawYaml:
-    - k8s/auth-secrets.yml
-    - k8s/ai-secret.yml
     - k8s/ai-deployment.yml
     - k8s/ai.service.yml
     - k8s/auth-deployment.yml
@@ -58,6 +56,8 @@ manifests:
     - k8s/rbac-sa.yml
     - k8s/rbac-role.yml
     - k8s/rbac-rb.yml
+    - k8s/secret.yml
+    
 
 # Add this at the bottom of your skaffold.yml
 portForward:

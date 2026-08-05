@@ -39,3 +39,13 @@ export async function createService(sandboxId){
 
     return response
 }
+
+export async function deleteService(sandboxId){
+    const response = await k8sCoreV1Api.deleteNamespacedService({
+        name:`sandbox-service-${sandboxId}`,
+        namespace:"default"
+    },{
+        gracePeriodsScene:0
+    })
+    return response
+}

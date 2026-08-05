@@ -5,7 +5,7 @@ import dns from "node:dns";
 dns.setDefaultResultOrder('ipv4first');
 import http from 'http';
 import { createProxyServer } from 'httpxy';
-// import { refreshTTL } from './config/redis.js';
+import { refreshTTL } from "./config/redis.js";
 
 
 app.use(morgan('combined'));
@@ -81,6 +81,8 @@ app.use(async (req, res, next) => {
     if(!host) return next();
     
     const sandboxId = host.split('.')[ 0 ];
+
+    await refreshTTL(sandboxId);
 
     if (host.includes('agent')) {
         return getAgentProxy(sandboxId)(req, res, next);

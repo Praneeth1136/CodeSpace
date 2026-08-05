@@ -133,3 +133,14 @@ export async function waitForPodReady(sandboxId) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
+
+
+export async function deletePod(sandboxId){
+    const response = await k8sCoreV1Api.deleteNamespacedPod({
+        name:`sandbox-pod-${sandboxId}`,
+        namespace:"default"
+    },{
+        gracePeriodsScene:0
+    })
+    return response;
+}

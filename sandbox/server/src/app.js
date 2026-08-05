@@ -6,6 +6,8 @@ import { createPod, waitForPodReady } from "./kubernetes/pod.js";
 import { createService } from "./kubernetes/service.js";
 import { v7 as uuidv7 } from "uuid";
 
+import { createSandboxkey } from "./config/redis.js";
+
 const app = express();
 
 
@@ -23,9 +25,11 @@ app.get("/api/sandbox/health", (req, res) => {
 
 app.post("/api/sandbox/start",async(req,res)=>{
     const sandboxId = uuidv7();
+    
     try{
         const pod = await createPod(sandboxId);
         const service = await createService(sandboxId);
+        const key = await createSandboxkey(sandboxId);
 
         // Wait for the pod to be fully Running before returning
         await waitForPodReady(sandboxId);
