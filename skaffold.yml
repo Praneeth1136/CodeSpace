@@ -21,6 +21,14 @@ build:
     sync:
       infer:
         - "src/**"
+  
+  - image: notification
+    context: notifications
+    docker:
+      dockerfile: dockerfile
+    sync:
+      infer:
+        - "src/**"
 
   - image: agent
     context: sandbox/agent
@@ -57,6 +65,8 @@ manifests:
     - k8s/rbac-role.yml
     - k8s/rbac-rb.yml
     - k8s/secret.yml
+    - k8s/notifications.service.yml
+    - k8s/notifications-deployment.yml
     
 
 # Add this at the bottom of your skaffold.yml
