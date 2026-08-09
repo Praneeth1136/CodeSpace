@@ -38,6 +38,19 @@ spec:
                 secretKeyRef:
                   name: database
                   key: REDIS_URL
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: JWT_SECRET
+                
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: database
+                  key: SANDBOX 
+                
           readinessProbe:
             httpGet:
               path: /api/sandbox/health
