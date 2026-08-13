@@ -19,13 +19,7 @@ router.get("/google/callback",passport.authenticate("google",{
 
         let user = await User.findOne({googleId:id});
 
-        await sendAuthNotification({
-            userId:user._id,
-            action:'google_login',
-            timestamp:new Data(),
-            email:emails[0].value,
-            ip:req.ip
-        });
+
 
         if(!user){
             user = await User.create({
@@ -37,6 +31,15 @@ router.get("/google/callback",passport.authenticate("google",{
             await user.save();
             
         }
+
+        await sendAuthNotification({
+            userId:user._id,
+            action:'google_login',
+            timestamp:new Date(),
+            email:emails[0].value,
+            ip:req.ip
+        });
+
         const token = jwt.sign({userId:user._id},process.env.JWT_SECRET,{expiresIn:"1h"});
         res.cookie("token",token,{
             httpOnly:true,

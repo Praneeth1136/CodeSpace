@@ -4,7 +4,7 @@ metadata:
   name:  sandbox-service
 spec:
   selector:
-    app: sandbox
+    app: sandbox-api
   type:  ClusterIP
   ports:
   - name:  mainsandboxport

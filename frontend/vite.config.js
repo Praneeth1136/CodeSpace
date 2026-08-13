@@ -2,29 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-function sandboxHostPlugin() {
-  return {
-    name: 'sandbox-host-plugin',
-    configureServer(server) {
-      server.httpServer.on('upgrade', (req, socket, head) => {
-        if (req.url.startsWith('/socket.io-agent')) {
-          try {
-            const url = new URL(req.url, 'http://127.0.0.1');
-            const sandboxId = url.searchParams.get('sandboxId');
-            if (sandboxId) {
-              req.headers['host'] = `${sandboxId}.agent.localhost`;
-            }
-          } catch (e) {
-            // ignore
-          }
-        }
-      });
-    }
-  };
-}
+
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), sandboxHostPlugin()],
+  plugins: [react(), tailwindcss()],
   server: {
     cors: {
       origin: "*"
@@ -71,6 +52,17 @@ export default defineConfig({
         configure: (proxy) => {
           proxy.on('error', (err, req) => {
             console.error('[Vite Proxy Error WS]', err.message, req.url);
+          });
+          proxy.on('proxyReqWs', (proxyReq, req, socket, options, head) => {
+            try {
+              const url = new URL(req.url, 'http://127.0.0.1');
+              const sandboxId = url.searchParams.get('sandboxId');
+              if (sandboxId) {
+                proxyReq.setHeader('host', `${sandboxId}.agent.localhost`);
+              }
+            } catch (e) {
+              // ignore
+            }
           });
         },
         rewrite: (path) => {

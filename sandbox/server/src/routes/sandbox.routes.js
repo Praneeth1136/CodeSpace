@@ -12,10 +12,13 @@ const router = Router();
 
 
 router.post('/project', authMiddleware, async (req, res) => {
+    if (!req.body || !req.body.title) {
+        return res.status(400).json({ message: 'Title is required in the request body.' });
+    }
     const { title } = req.body;
 
     const newProject = new Project({
-        user: req.user.id,
+        user: req.user.id || req.user.userId,
         title
     });
 
@@ -27,21 +30,24 @@ router.post('/project', authMiddleware, async (req, res) => {
     });
 })
 
-router.post("/start", async (req, res) => {
+router.post("/start", authMiddleware, async (req, res) => {
 
-    // const projectId = req.body.projectId;
+    if (!req.body || !req.body.projectId) {
+        return res.status(400).json({ message: 'projectId is required in the request body. Make sure you are sending JSON with Content-Type: application/json' });
+    }
+    const projectId = req.body.projectId;
 
-    // // Verify that the project belongs to the authenticated user
-    // const project = await Project.findOne({ _id: projectId, user: req.user.id });
+    // Verify that the project belongs to the authenticated user
+    const project = await Project.findOne({ _id: projectId, user: req.user.id || req.user.userId });
 
-    // if (!project) {
-    //     return res.status(404).json({ message: 'Project not found or access denied' });
-    // }
+    if (!project) {
+        return res.status(404).json({ message: 'Project not found or access denied' });
+    }
 
     const sandboxId = uuidv7();
 
     try {
-        const pod = await createPod(sandboxId);
+        const pod = await createPod(sandboxId, projectId);
         const service = await createService(sandboxId);
         const key = await createSandboxkey(sandboxId);
 
@@ -51,7 +57,7 @@ router.post("/start", async (req, res) => {
         res.status(200).json({
             message: "   Container Created successfully",
             sandboxId,
-                // service,
+            // service,
             previewUrl: `http://${sandboxId}.preview.localhost`
         })
     }
@@ -63,7 +69,7 @@ router.post("/start", async (req, res) => {
 
 
 router.get("/project", authMiddleware, async (req, res) => {
-    const projects = await Project.find({ user: req.user.id });
+    const projects = await Project.find({ user: req.user.id || req.user.userId });
 
     return res.status(200).json({
         message: 'Projects retrieved successfully',

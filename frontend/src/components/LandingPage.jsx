@@ -10,8 +10,23 @@ export default function LandingPage({ onSandboxCreated }) {
     setError(null);
 
     try {
-      const res = await fetch('/api/sandbox/start', { method: 'POST' });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      // 1. First create a project to get a projectId
+      const projectRes = await fetch('/api/sandbox/project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'New Sandbox Project' })
+      });
+      if (!projectRes.ok) throw new Error(`Failed to create project: ${projectRes.status}`);
+      const projectData = await projectRes.json();
+      const projectId = projectData.project._id;
+
+      // 2. Then start the sandbox with the projectId
+      const res = await fetch('/api/sandbox/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId })
+      });
+      if (!res.ok) throw new Error(`Failed to start sandbox: ${res.status}`);
       const data = await res.json();
       onSandboxCreated(data.sandboxId, data.previewUrl);
     } catch (err) {

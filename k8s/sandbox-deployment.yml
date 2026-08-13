@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sandbox
+  name: sandbox-api
   labels:
-    app: sandbox
+    app: sandbox-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sandbox
+      app: sandbox-api
   template:
     metadata:
       labels:
-        app: sandbox
+        app: sandbox-api
     spec:
       serviceAccountName: resource-manager
       containers:

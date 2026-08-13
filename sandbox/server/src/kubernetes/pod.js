@@ -1,7 +1,7 @@
 import {k8sCoreV1Api} from "./config.js" 
 // import { v4 as uuidv4 } from "uuid";
 
-export async function createPod(sandboxId){
+export async function createPod(sandboxId,projectId){
     const podManifest = {
         metadata:{
             name:`sandbox-pod-${sandboxId}`,
@@ -86,10 +86,61 @@ export async function createPod(sandboxId){
                         }
                     ],
 
+                },
+               {
+                    image: "sync-agent:latest",
+                    imagePullPolicy: "IfNotPresent",
+                    name: 'sync-agent-container',
+                    ports: [ { containerPort: 4000, name: "http" } ],
+                    resources: {
+                        limits: { cpu: "500m", memory: "1Gi" },
+                        requests: { cpu: "250m", memory: "500Mi" }
+                    },
+                    volumeMounts: [
+                        {
+                            name: 'workspace-volume',
+                            mountPath: '/workspace'
+                        }
+                    ],
+                    env: [
+                        {
+                            name: "PROJECT_ID",
+                            value: projectId
+                        },
+                        {
+                            name: "AWS_ACCESS_KEY_ID",
+                            valueFrom: {
+                                secretKeyRef: {
+                                    name: "aws",
+                                    key: "AWS_ACCESS_KEY_ID"
+                                }
+                            }
+                        },
+                        {
+                            name: "AWS_SECRET_ACCESS_KEY",
+                            valueFrom: {
+                                secretKeyRef: {
+                                    name: "aws",
+                                    key: "AWS_SECRET_ACCESS_KEY"
+                                }
+                            }
+
+                        },
+                        {
+                            name: "AWS_REGION",
+                            valueFrom: {
+                                secretKeyRef: {
+                                    name: "aws",
+                                    key: "AWS_REGION"
+                                }
+                            }
+                        }
+                    ]
                 }
             ]
         }
     }
+
 
     const response = await k8sCoreV1Api.createNamespacedPod({
         namespace:"default",

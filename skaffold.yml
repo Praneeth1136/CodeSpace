@@ -35,6 +35,11 @@ build:
     docker:
       dockerfile: dockerfile
 
+  - image: sync-agent
+    context: sandbox/sync-agent
+    docker:
+      dockerfile: dockerfile
+
   - image: router
     context: sandbox/routers
     docker:
@@ -44,6 +49,10 @@ build:
     context: sandbox/server
     docker:
       dockerfile: dockerfile
+    sync:
+      infer:
+        - "src/**"
+        - "server.js"
 
   - image: template
     context: sandbox/templates
