@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FolderOpen, File, ChevronRight, ChevronDown, RefreshCw, Loader2 } from 'lucide-react';
+import { getAgentConfig } from '../utils/agentUrl';
 
 // Map file extensions to display colors
 const extColors = {
@@ -124,7 +125,8 @@ export default function FileExplorer({ sandboxId, onFileSelect, activeFile }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/agent/${sandboxId}/list-files`);
+      const config = getAgentConfig(sandboxId);
+      const res = await fetch(config.listFilesUrl);
       if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
       setFiles(data.files || []);

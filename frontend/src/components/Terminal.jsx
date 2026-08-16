@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import { Terminal as XTerm } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
+import { getAgentConfig } from '../utils/agentUrl';
 
 export default function TerminalPanel({ sandboxId }) {
   const terminalRef = useRef(null);
@@ -66,13 +67,15 @@ export default function TerminalPanel({ sandboxId }) {
     fitAddonRef.current = fitAddon;
     let socket = null;
 
+    const config = getAgentConfig(sandboxId);
+
     // Spawn PTY process first with retry logic
     // (the pod might be 'Ready' before Node.js actually binds port 3000, causing 504s)
     const spawnTerminalWithRetry = async (retries = 5) => {
       for (let i = 0; i < retries; i++) {
         if (!isMounted) return false;
         try {
-          const res = await fetch(`/agent/${sandboxId}/spawn?sandboxId=${sandboxId}`);
+          const res = await fetch(config.spawnUrl);
           if (res.ok) return true;
           console.warn(`Spawn attempt ${i + 1} failed with status: ${res.status}`);
         } catch (err) {
@@ -93,15 +96,8 @@ export default function TerminalPanel({ sandboxId }) {
         return;
       }
         
-      // Connect socket.io through the Vite proxy
-      socket = io('/', {
-        path: '/socket.io-agent',
-        query: { sandboxId },
-        transports: ['websocket', 'polling'],
-        reconnection: true,
-        reconnectionAttempts: 10,
-        reconnectionDelay: 1000,
-      });
+      // Connect socket.io
+      socket = io(config.socketUrl, config.socketOptions);
 
       socketRef.current = socket;
 

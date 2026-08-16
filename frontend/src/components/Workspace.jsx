@@ -4,6 +4,7 @@ import FileExplorer from './FileExplorer';
 import ChatPanel from './ChatPanel';
 import TerminalPanel from './Terminal';
 import Preview from './Preview';
+import { getAgentConfig } from '../utils/agentUrl';
 
 // ── Resizable divider ──
 function Divider({ direction = 'vertical', onMouseDown }) {
@@ -197,7 +198,8 @@ export default function Workspace({ sandboxId, previewUrl }) {
     // Fetch content if not already loaded
     if (!fileContents[filePath]) {
       try {
-        const res = await fetch(`/agent/${sandboxId}/read-files?files=${encodeURIComponent(filePath)}`);
+        const config = getAgentConfig(sandboxId);
+        const res = await fetch(config.readFilesUrl(filePath));
         if (!res.ok) throw new Error(`${res.status}`);
         const data = await res.json();
         // Extract content from the response
