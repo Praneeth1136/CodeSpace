@@ -11,7 +11,7 @@ router.get("/google",passport.authenticate("google",{
 }));
 
 router.get("/google/callback",passport.authenticate("google",{
-    failureRedirect:"http://localhost:5173",
+    failureRedirect:"https://www.praneethkilaparthi.dev",
     session: false
 }),async(req,res)=>{
     try{
@@ -47,16 +47,16 @@ router.get("/google/callback",passport.authenticate("google",{
             sameSite:"strict",
             maxAge:60 * 60 * 1000
         });
-        res.redirect("http://localhost:5173");
+        res.redirect("https://www.praneethkilaparthi.dev");
     }catch(error){
         console.log(error);
-        res.redirect("http://localhost:5173");
+        res.redirect("https://www.praneethkilaparthi.dev");
     }
 });
 
 router.get("/logout",(req,res)=>{
     req.logout();
-    res.redirect("http://localhost:5173");
+    res.redirect("https://www.praneethkilaparthi.dev");
 });
 
 export default router;

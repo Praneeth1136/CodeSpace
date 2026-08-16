@@ -15,7 +15,7 @@ spec:
         app: router
     spec:
       containers:
-      - image:  router:latest
+      - image: 052717075754.dkr.ecr.ap-south-1.amazonaws.com/router
         imagePullPolicy: IfNotPresent
         name:  router-server
         resources:

@@ -58,7 +58,7 @@ router.post("/start", authMiddleware, async (req, res) => {
             message: "   Container Created successfully",
             sandboxId,
             // service,
-            previewUrl: `http://${sandboxId}.preview.localhost`
+            previewUrl: `http://${sandboxId}.preview.praneethkilaparthi.dev`
         })
     }
     catch (error) {

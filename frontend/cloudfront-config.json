@@ -1,0 +1,38 @@
+{
+  "CallerReference": "praneethkilaparthi-frontend-1",
+  "Comment": "praneethkilaparthi frontend",
+  "DefaultRootObject": "index.html",
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "S3-praneethkilaparthi-frontend",
+        "DomainName": "praneethkilaparthi-frontend.s3-website.ap-south-1.amazonaws.com",
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "http-only"
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "S3-praneethkilaparthi-frontend",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+    "Compress": true
+  },
+  "Aliases": {
+    "Quantity": 1,
+    "Items": [
+      "www.praneethkilaparthi.dev"
+    ]
+  },
+  "ViewerCertificate": {
+    "ACMCertificateArn": "arn:aws:acm:us-east-1:052717075754:certificate/48820a03-28b3-43b6-9911-423e4f844d5d",
+    "SSLSupportMethod": "sni-only",
+    "MinimumProtocolVersion": "TLSv1.2_2021"
+  },
+  "Enabled": true,
+  "HttpVersion": "http2"
+}

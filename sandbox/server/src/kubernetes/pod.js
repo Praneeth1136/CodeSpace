@@ -20,8 +20,8 @@ export async function createPod(sandboxId,projectId){
             initContainers: [
                 {
                     name: 'init-container',
-                    image: "template:latest",
-                    imagePullPolicy: "IfNotPresent",
+                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/template:latest",
+                    imagePullPolicy: "Always",
                     command: [ 'sh', '-c', 'cp -r /workspace/. /seed/' ],
                     volumeMounts: [
                         {
@@ -33,8 +33,8 @@ export async function createPod(sandboxId,projectId){
             ],
             containers:[
                 {
-                    image: "template:latest",
-                    imagePullPolicy: "IfNotPresent",
+                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/template:latest",
+                    imagePullPolicy: "Always",
                     name: 'sandbox-container',
                     ports:[
                         {
@@ -48,7 +48,7 @@ export async function createPod(sandboxId,projectId){
                             memory:"256Mi"
                         },
                         requests:{
-                            cpu:"250m",
+                            cpu:"50m",
                             memory:"128Mi"
                         }
                     },
@@ -60,8 +60,8 @@ export async function createPod(sandboxId,projectId){
                     ],
                 },
                 {
-                    image: "agent:latest",
-                    imagePullPolicy: "IfNotPresent",
+                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/agent:latest",
+                    imagePullPolicy: "Always",
                     name: 'agent-container',
                     ports:[
                         {
@@ -75,7 +75,7 @@ export async function createPod(sandboxId,projectId){
                             memory:"256Mi"
                         },
                         requests:{
-                            cpu:"250m",
+                            cpu:"50m",
                             memory:"128Mi"
                         }
                     },
@@ -88,13 +88,13 @@ export async function createPod(sandboxId,projectId){
 
                 },
                {
-                    image: "sync-agent:latest",
-                    imagePullPolicy: "IfNotPresent",
+                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/sync-agent:latest",
+                    imagePullPolicy: "Always",
                     name: 'sync-agent-container',
                     ports: [ { containerPort: 4000, name: "http" } ],
                     resources: {
-                        limits: { cpu: "500m", memory: "1Gi" },
-                        requests: { cpu: "250m", memory: "500Mi" }
+                        limits: { cpu: "500m", memory: "256Mi" },
+                        requests: { cpu: "50m", memory: "128Mi" }
                     },
                     volumeMounts: [
                         {
@@ -155,11 +155,16 @@ export async function createPod(sandboxId,projectId){
 // refresh it is loading beacuse kubernetes still downloading the image thatswhy not working in first go
 // actually we are calling the service before the pod is ready
 //
-export async function waitForPodReady(sandboxId) {
+export async function waitForPodReady(sandboxId, timeoutMs = 300000) {
     const podName = `sandbox-pod-${sandboxId}`;
+    const startTime = Date.now();
     let isReady = false;
     
     while (!isReady) {
+        if (Date.now() - startTime > timeoutMs) {
+            throw new Error(`Timeout waiting for pod ${podName} to become ready`);
+        }
+
         try {
             const response = await k8sCoreV1Api.readNamespacedPod({
                 name: podName,

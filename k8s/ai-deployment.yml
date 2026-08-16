@@ -15,9 +15,9 @@ spec:
         app: ai-server
     spec:
       containers:
-        - image: ai-orchestration
+        - image: 052717075754.dkr.ecr.ap-south-1.amazonaws.com/ai-orchestration
           name: ai-server
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           resources:
             requests:
               cpu: "250m"

@@ -4,6 +4,9 @@ kind: Config
 build:
   tagPolicy:
     sha256: {}
+
+  platforms:
+    - linux/amd64      
     
   artifacts:
   
@@ -11,24 +14,17 @@ build:
     context: ai-orchestration
     docker:
       dockerfile: dockerfile
-    sync:
-      infer:
-        - "src/**"
+    
   - image: 052717075754.dkr.ecr.ap-south-1.amazonaws.com/auth
     context: auth
     docker:
       dockerfile: dockerfile
-    sync:
-      infer:
-        - "src/**"
+
   
   - image: 052717075754.dkr.ecr.ap-south-1.amazonaws.com/notification
     context: notifications
     docker:
       dockerfile: dockerfile
-    sync:
-      infer:
-        - "src/**"
 
   - image: 052717075754.dkr.ecr.ap-south-1.amazonaws.com/agent
     context: sandbox/agent
@@ -49,10 +45,6 @@ build:
     context: sandbox/server
     docker:
       dockerfile: dockerfile
-    sync:
-      infer:
-        - "src/**"
-        - "server.js"
 
   - image: 052717075754.dkr.ecr.ap-south-1.amazonaws.com/template
     context: sandbox/templates

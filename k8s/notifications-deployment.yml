@@ -15,8 +15,9 @@ spec:
         app:  notification
     spec:
       containers:
-      - image:  notification
+      - image:  052717075754.dkr.ecr.ap-south-1.amazonaws.com/notification
         name:  notification-container
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: "150m"

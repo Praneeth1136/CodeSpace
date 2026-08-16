@@ -9,65 +9,72 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
 
-    # nginx.ingress.kubernetes.io/affinity: "cookie"
-    # nginx.ingress.kubernetes.io/session-cookie-name: "route"
-    # nginx.ingress.kubernetes.io/session-cookie-path: "/"
+
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-path: "/"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://www.praneethkilaparthi.dev"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS, DELETE"
+
 
 spec:
   ingressClassName: nginx
+
   rules:
+    # - host: "app.praneethkilaparthi.dev"
     - http:
         paths:
-        - pathType: Prefix
-          path: "/api/sandbox"
-          backend:
-            service:
-              name: sandbox-service
-              port: 
-                number: 80
+          - pathType: Prefix
+            path: "/api/sandbox"
+            backend:
+              service:
+                name: sandbox-service
+                port:
+                  number: 80
 
-        - pathType: Prefix
-          path: "/api/ai"
-          backend:
-            service:
-              name: ai-service
-              port: 
-                    number: 80
+          - pathType: Prefix
+            path: "/api/ai"
+            backend:
+              service:
+                name: ai-service
+                port:
+                  number: 80
 
-        - pathType: Prefix
-          path: "/api/auth"
-          backend:
-            service:
-              name: auth-service
-              port: 
-                number: 80
-        - pathType: Prefix
-          path: "/api/notification"
-          backend:
-            service:
-              name: notification-service
-              port: 
-                number: 80
+          - pathType: Prefix
+            path: "/api/auth"
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: "/api/notification"
+            backend:
+              service:
+                name: notification-service
+                port:
+                  number: 80
 
-    - host: "*.preview.localhost"
+    - host: "*.preview.praneethkilaparthi.dev"
       http:
         paths:
-        - pathType: Prefix
-          path: "/"
-          backend:
-            service:
-              name: router-service
-              port: 
-                number: 3000
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: router-service
+                port:
+                  number: 3000
 
-
-    - host: "*.agent.localhost"
+    - host: "*.agent.praneethkilaparthi.dev"
       http:
         paths:
-        - pathType: Prefix
-          path: "/"
-          backend:
-            service:
-              name: router-service
-              port: 
-                number: 3000
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: router-service
+                port:
+                  number: 3000
