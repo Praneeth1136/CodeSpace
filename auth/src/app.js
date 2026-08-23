@@ -21,10 +21,13 @@ app.use(passport.initialize());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // callbackURL: "http://localhost:5173/api/auth/google/callback",
     callbackURL: "https://www.praneethkilaparthi.dev/api/auth/google/callback",
-    scope: ["profile", "email"]
+    scope: ["profile", "email"],
+    accessType: "offline",
+    prompt: "consent"
 }, (accessToken, refreshToken, profile, done) => {
+    profile.accessToken = accessToken;
+    profile.refreshToken = refreshToken;
     return done(null, profile);
 }));
 app.get("/_status/healthz", (req, res) => {

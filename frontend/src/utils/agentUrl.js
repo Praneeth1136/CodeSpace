@@ -15,6 +15,7 @@ export function getAgentConfig(sandboxId) {
         reconnection: true,
         reconnectionAttempts: 10,
         reconnectionDelay: 1000,
+        
       }
     };
   }

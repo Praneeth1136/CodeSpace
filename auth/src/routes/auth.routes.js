@@ -7,6 +7,8 @@ const router = Router();
 
 router.get("/google",passport.authenticate("google",{
     scope:["profile","email"],
+    accessType: "offline",
+    prompt: "consent",
     session: false
 }));
 
@@ -15,21 +17,22 @@ router.get("/google/callback",passport.authenticate("google",{
     session: false
 }),async(req,res)=>{
     try{
-        const{id,displayName,emails,photos} = req.user;
+        const{id,displayName,emails,photos,refreshToken} = req.user;
 
         let user = await User.findOne({googleId:id});
-
-
 
         if(!user){
             user = await User.create({
                 googleId:id,
                 displayName,
                 email:emails[0].value,
-                photoUrl:photos[0].value
+                photoUrl:photos[0].value,
+                ...(refreshToken && { refreshToken })
             });
             await user.save();
-            
+        } else if (refreshToken) {
+            user.refreshToken = refreshToken;
+            await user.save();
         }
 
         await sendAuthNotification({
