@@ -1,8 +1,9 @@
-export function getAgentConfig(sandboxId) {
+export function getAgentConfig(sandboxId, agentToken) {
   const host = window.location.hostname;
 
   if (host.includes('localhost') || host === '127.0.0.1') {
     return {
+      agentToken,
       // In local dev, Vite proxies /agent/{sandboxId} and /socket.io-agent
       listFilesUrl: `/agent/${sandboxId}/list-files`,
       readFilesUrl: (filePath) => `/agent/${sandboxId}/read-files?files=${encodeURIComponent(filePath)}`,
@@ -11,6 +12,7 @@ export function getAgentConfig(sandboxId) {
       socketOptions: {
         path: '/socket.io-agent',
         query: { sandboxId },
+        auth: { token: agentToken },
         transports: ['websocket', 'polling'],
         reconnection: true,
         reconnectionAttempts: 10,
@@ -25,12 +27,14 @@ export function getAgentConfig(sandboxId) {
   const agentOrigin = `https://${sandboxId}.agent.${rootDomain}`;
 
   return {
+    agentToken,
     listFilesUrl: `${agentOrigin}/list-files`,
     readFilesUrl: (filePath) => `${agentOrigin}/read-files?files=${encodeURIComponent(filePath)}`,
     spawnUrl: `${agentOrigin}/spawn?sandboxId=${sandboxId}`,
     socketUrl: agentOrigin,
     socketOptions: {
       path: '/socket.io',
+      auth: { token: agentToken },
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,

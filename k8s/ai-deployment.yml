@@ -26,6 +26,11 @@ spec:
               cpu: "500m"
               memory: "256M"
           env:
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database
+                  key: REDIS_URL
             - name: MISTRAL_API_KEY
               valueFrom:
                 secretKeyRef:

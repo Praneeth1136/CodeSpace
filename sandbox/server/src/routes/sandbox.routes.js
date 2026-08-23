@@ -3,6 +3,7 @@ import { createPod, waitForPodReady } from '../kubernetes/pod.js';
 import { createService } from '../kubernetes/service.js';
 import { createSandboxkey } from '../config/redis.js';
 import { v7 as uuidv7 } from "uuid"
+
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import Project from "../models/project.model.js";
 
@@ -45,9 +46,10 @@ router.post("/start", authMiddleware, async (req, res) => {
     }
 
     const sandboxId = uuidv7();
+    const agentToken = uuidv7() + uuidv7();
 
     try {
-        const pod = await createPod(sandboxId, projectId);
+        const pod = await createPod(sandboxId, projectId, agentToken);
         const service = await createService(sandboxId);
         const key = await createSandboxkey(sandboxId);
 
@@ -57,6 +59,7 @@ router.post("/start", authMiddleware, async (req, res) => {
         res.status(200).json({
             message: "   Container Created successfully",
             sandboxId,
+            agentToken,
             // service,
             previewUrl: `https://${sandboxId}.preview.praneethkilaparthi.dev`
         })

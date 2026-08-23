@@ -5,7 +5,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { getAgentConfig } from '../utils/agentUrl';
 
-export default function TerminalPanel({ sandboxId }) {
+export default function TerminalPanel({ sandboxId, agentToken }) {
   const terminalRef = useRef(null);
   const xtermRef = useRef(null);
   const fitAddonRef = useRef(null);
@@ -67,7 +67,7 @@ export default function TerminalPanel({ sandboxId }) {
     fitAddonRef.current = fitAddon;
     let socket = null;
 
-    const config = getAgentConfig(sandboxId);
+    const config = getAgentConfig(sandboxId, agentToken);
 
     // Spawn PTY process first with retry logic
     // (the pod might be 'Ready' before Node.js actually binds port 3000, causing 504s)
@@ -75,7 +75,9 @@ export default function TerminalPanel({ sandboxId }) {
       for (let i = 0; i < retries; i++) {
         if (!isMounted) return false;
         try {
-          const res = await fetch(config.spawnUrl);
+          const res = await fetch(config.spawnUrl, {
+            headers: { 'Authorization': `Bearer ${agentToken}` }
+          });
           if (res.ok) return true;
           console.warn(`Spawn attempt ${i + 1} failed with status: ${res.status}`);
         } catch (err) {

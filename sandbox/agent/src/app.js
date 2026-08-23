@@ -24,6 +24,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
+// Authentication Middleware
+app.use((req, res, next) => {
+    if (req.path === "/") return next();
+    
+    const token = req.headers.authorization?.split(' ')[1] || req.query.token;
+    
+    if (!token || token !== process.env.AGENT_TOKEN) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    next();
+});
+
 app.get("/", (req,res) => {
     res.send("Agent is running");
 });
@@ -54,6 +67,14 @@ app.get('/spawn', (req, res) => {
     });
     
     res.status(200).json({ message: "Terminal spawned" });
+});
+
+io.use((socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token || token !== process.env.AGENT_TOKEN) {
+        return next(new Error('Unauthorized'));
+    }
+    next();
 });
 
 io.on("connection",(socket)=>{

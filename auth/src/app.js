@@ -1,5 +1,5 @@
 import express from "express";
-import morgan from "morgan";
+import pinoHttp from "pino-http";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
@@ -12,7 +12,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(morgan("dev"));
+app.use(pinoHttp());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -37,5 +37,13 @@ app.get("/_status/healthz", (req, res) => {
 })
 
 app.use("/api/auth", authRoutes);
+
+// Centralized error handling middleware
+app.use((err, req, res, next) => {
+    req.log.error(err);
+    res.status(err.status || 500).json({
+        error: "Internal Server Error"
+    });
+});
 
 export default app;

@@ -11,5 +11,9 @@ redis.on('error', (err) => {
 });
 
 export async function refreshTTL(sandboxId) {
+    const expiresAt = Date.now() + 1200000;
+    await redis.zadd('sandbox_expirations', expiresAt, sandboxId);
+    
+    // Also keep the existing expire for legacy fallback
     await redis.expire(`sandbox:${sandboxId}`, 60 * 20);
 }

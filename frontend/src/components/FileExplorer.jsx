@@ -115,7 +115,7 @@ function TreeNode({ node, depth = 0, onFileClick, activeFile }) {
   );
 }
 
-export default function FileExplorer({ sandboxId, onFileSelect, activeFile }) {
+export default function FileExplorer({ sandboxId, agentToken, onFileSelect, activeFile }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -125,8 +125,10 @@ export default function FileExplorer({ sandboxId, onFileSelect, activeFile }) {
     setLoading(true);
     setError(null);
     try {
-      const config = getAgentConfig(sandboxId);
-      const res = await fetch(config.listFilesUrl);
+      const config = getAgentConfig(sandboxId, agentToken);
+      const res = await fetch(config.listFilesUrl, {
+        headers: { 'Authorization': `Bearer ${agentToken}` }
+      });
       if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
       setFiles(data.files || []);

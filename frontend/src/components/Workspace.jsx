@@ -159,7 +159,7 @@ function DisconnectBanner({ onReconnect }) {
   );
 }
 
-export default function Workspace({ sandboxId, previewUrl }) {
+export default function Workspace({ sandboxId, previewUrl, agentToken }) {
   // Panel sizes (percentages)
   const [sidebarWidth, setSidebarWidth] = useState(220);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -198,8 +198,10 @@ export default function Workspace({ sandboxId, previewUrl }) {
     // Fetch content if not already loaded
     if (!fileContents[filePath]) {
       try {
-        const config = getAgentConfig(sandboxId);
-        const res = await fetch(config.readFilesUrl(filePath));
+        const config = getAgentConfig(sandboxId, agentToken);
+        const res = await fetch(config.readFilesUrl(filePath), {
+          headers: { 'Authorization': `Bearer ${agentToken}` }
+        });
         if (!res.ok) throw new Error(`${res.status}`);
         const data = await res.json();
         // Extract content from the response
@@ -382,7 +384,7 @@ export default function Workspace({ sandboxId, previewUrl }) {
         {!sidebarCollapsed && (
           <>
             <div style={{ width: `${effectiveSidebarWidth}px`, minWidth: `${effectiveSidebarWidth}px` }} className="h-full overflow-hidden">
-              <FileExplorer sandboxId={sandboxId} onFileSelect={handleFileSelect} activeFile={activeTab} />
+              <FileExplorer sandboxId={sandboxId} agentToken={agentToken} onFileSelect={handleFileSelect} activeFile={activeTab} />
             </div>
             <Divider direction="vertical" onMouseDown={startSidebarResize} />
           </>
@@ -462,7 +464,7 @@ export default function Workspace({ sandboxId, previewUrl }) {
 
           {/* Bottom: terminal */}
           <div style={{ height: `${terminalHeight}%` }} className="overflow-hidden">
-            <TerminalPanel sandboxId={sandboxId} />
+            <TerminalPanel sandboxId={sandboxId} agentToken={agentToken} />
           </div>
         </div>
 

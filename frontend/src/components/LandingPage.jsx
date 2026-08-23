@@ -38,7 +38,7 @@ export default function LandingPage({ onSandboxCreated }) {
       });
       if (!res.ok) throw new Error(`Failed to start sandbox: ${res.status}`);
       const data = await res.json();
-      onSandboxCreated(data.sandboxId, data.previewUrl);
+      onSandboxCreated(data.sandboxId, data.previewUrl, data.agentToken);
     } catch (err) {
       setError(err.message || 'Failed to start sandbox');
       setLoading(false);

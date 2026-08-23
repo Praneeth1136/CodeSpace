@@ -1,7 +1,7 @@
 import {k8sCoreV1Api} from "./config.js" 
 // import { v4 as uuidv4 } from "uuid";
 
-export async function createPod(sandboxId,projectId){
+export async function createPod(sandboxId,projectId,agentToken){
     const podManifest = {
         metadata:{
             name:`sandbox-pod-${sandboxId}`,
@@ -11,6 +11,9 @@ export async function createPod(sandboxId,projectId){
             }
         },
         spec:{
+            securityContext: {
+                fsGroup: 1000
+            },
             volumes:[
                 {
                     name:"workspace-volume",
@@ -28,7 +31,11 @@ export async function createPod(sandboxId,projectId){
                             name: 'workspace-volume',
                             mountPath: '/seed'
                         }
-                    ]
+                    ],
+                    resources: {
+                        limits: { cpu: "250m", memory: "128Mi" },
+                        requests: { cpu: "50m", memory: "64Mi" }
+                    }
                 }
             ],
             containers:[
@@ -36,6 +43,10 @@ export async function createPod(sandboxId,projectId){
                     image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/template:latest",
                     imagePullPolicy: "Always",
                     name: 'sandbox-container',
+                    securityContext: {
+                        runAsNonRoot: true,
+                        runAsUser: 1000
+                    },
                     ports:[
                         {
                             containerPort:5173,
@@ -63,6 +74,10 @@ export async function createPod(sandboxId,projectId){
                     image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/agent:latest",
                     imagePullPolicy: "Always",
                     name: 'agent-container',
+                    securityContext: {
+                        runAsNonRoot: true,
+                        runAsUser: 1000
+                    },
                     ports:[
                         {
                             containerPort:3000,
@@ -85,12 +100,21 @@ export async function createPod(sandboxId,projectId){
                             mountPath:"/workspace"
                         }
                     ],
-
+                    env: [
+                        {
+                            name: "AGENT_TOKEN",
+                            value: agentToken
+                        }
+                    ]
                 },
                {
                     image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/sync-agent:latest",
                     imagePullPolicy: "Always",
                     name: 'sync-agent-container',
+                    securityContext: {
+                        runAsNonRoot: true,
+                        runAsUser: 1000
+                    },
                     ports: [ { containerPort: 4000, name: "http" } ],
                     resources: {
                         limits: { cpu: "500m", memory: "256Mi" },

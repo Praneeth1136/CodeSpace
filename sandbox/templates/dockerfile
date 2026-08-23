@@ -10,4 +10,7 @@ COPY . .
 
 EXPOSE 5173
 
+RUN chown -R node:node /workspace
+USER node
+
 CMD ["npm","run","dev"]
