@@ -44,6 +44,12 @@ spec:
                 name:  google
                 key:  EMAIL_USER 
 
+          - name:  EMAIL_PASS
+            valueFrom:
+              secretKeyRef:
+                name:  google
+                key:  EMAIL_PASS 
+
           - name:  GOOGLE_CLIENT_ID
             valueFrom:
               secretKeyRef:
