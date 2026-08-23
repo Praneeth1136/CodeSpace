@@ -27,7 +27,7 @@ export function getAgentConfig(sandboxId) {
   return {
     listFilesUrl: `${agentOrigin}/list-files`,
     readFilesUrl: (filePath) => `${agentOrigin}/read-files?files=${encodeURIComponent(filePath)}`,
-    spawnUrl: `${agentOrigin}/spawn`,
+    spawnUrl: `${agentOrigin}/spawn?sandboxId=${sandboxId}`,
     socketUrl: agentOrigin,
     socketOptions: {
       path: '/socket.io',
