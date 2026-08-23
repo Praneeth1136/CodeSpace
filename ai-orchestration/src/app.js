@@ -2,8 +2,18 @@ import express from "express";
 import agentRouter from "./routes/agent.routes.js"
 
 import pinoHttp from "pino-http";
+import helmet from "helmet";
+import cors from "cors";
 
 const app = express();
+
+const corsOptions = {
+    origin: ['https://praneethkilaparthi.dev', 'http://localhost:5173'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+app.use(helmet());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

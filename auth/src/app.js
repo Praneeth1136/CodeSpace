@@ -11,6 +11,16 @@ import authRoutes from "./routes/auth.routes.js";
 dotenv.config();
 
 const app = express();
+import helmet from "helmet";
+import cors from "cors";
+
+const corsOptions = {
+    origin: ['https://praneethkilaparthi.dev', 'http://localhost:5173'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+app.use(helmet());
 
 app.use(pinoHttp());
 app.use(express.json());

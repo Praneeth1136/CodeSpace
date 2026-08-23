@@ -23,7 +23,7 @@ export async function createPod(sandboxId,projectId,agentToken){
             initContainers: [
                 {
                     name: 'init-container',
-                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/template:latest",
+                    image: process.env.TEMPLATE_IMAGE || "052717075754.dkr.ecr.ap-south-1.amazonaws.com/template:latest",
                     imagePullPolicy: "Always",
                     command: [ 'sh', '-c', 'cp -r /workspace/. /seed/' ],
                     volumeMounts: [
@@ -40,7 +40,7 @@ export async function createPod(sandboxId,projectId,agentToken){
             ],
             containers:[
                 {
-                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/template:latest",
+                    image: process.env.TEMPLATE_IMAGE || "052717075754.dkr.ecr.ap-south-1.amazonaws.com/template:latest",
                     imagePullPolicy: "Always",
                     name: 'sandbox-container',
                     securityContext: {
@@ -71,7 +71,7 @@ export async function createPod(sandboxId,projectId,agentToken){
                     ],
                 },
                 {
-                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/agent:latest",
+                    image: process.env.AGENT_IMAGE || "052717075754.dkr.ecr.ap-south-1.amazonaws.com/agent:latest",
                     imagePullPolicy: "Always",
                     name: 'agent-container',
                     securityContext: {
@@ -100,6 +100,16 @@ export async function createPod(sandboxId,projectId,agentToken){
                             mountPath:"/workspace"
                         }
                     ],
+                    livenessProbe: {
+                        httpGet: { path: '/health', port: 3000 },
+                        initialDelaySeconds: 10,
+                        periodSeconds: 15
+                    },
+                    readinessProbe: {
+                        httpGet: { path: '/health', port: 3000 },
+                        initialDelaySeconds: 5,
+                        periodSeconds: 5
+                    },
                     env: [
                         {
                             name: "AGENT_TOKEN",
@@ -108,7 +118,7 @@ export async function createPod(sandboxId,projectId,agentToken){
                     ]
                 },
                {
-                    image: "052717075754.dkr.ecr.ap-south-1.amazonaws.com/sync-agent:latest",
+                    image: process.env.SYNC_AGENT_IMAGE || "052717075754.dkr.ecr.ap-south-1.amazonaws.com/sync-agent:latest",
                     imagePullPolicy: "Always",
                     name: 'sync-agent-container',
                     securityContext: {
@@ -126,6 +136,16 @@ export async function createPod(sandboxId,projectId,agentToken){
                             mountPath: '/workspace'
                         }
                     ],
+                    livenessProbe: {
+                        httpGet: { path: '/health', port: 4000 },
+                        initialDelaySeconds: 10,
+                        periodSeconds: 15
+                    },
+                    readinessProbe: {
+                        httpGet: { path: '/health', port: 4000 },
+                        initialDelaySeconds: 5,
+                        periodSeconds: 5
+                    },
                     env: [
                         {
                             name: "PROJECT_ID",

@@ -58,7 +58,11 @@ router.get("/google/callback",passport.authenticate("google",{
 });
 
 router.get("/logout",(req,res)=>{
-    req.logout();
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict"
+    });
     res.redirect("https://www.praneethkilaparthi.dev");
 });
 

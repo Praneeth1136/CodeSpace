@@ -17,8 +17,15 @@ app.use(cookieParser());
 import rateLimit from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
 import { redis } from "./config/redis.js";
+import helmet from "helmet";
 
-app.use(cors());
+const corsOptions = {
+    origin: ['https://praneethkilaparthi.dev', 'http://localhost:5173'],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+app.use(helmet());
 
 const sandboxRateLimiter = rateLimit({
     store: new RedisStore({
