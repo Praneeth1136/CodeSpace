@@ -20,9 +20,9 @@ export function getAgentConfig(sandboxId) {
     };
   }
 
-  // Production: connect directly to the wildcard agent subdomain
+  // Production: connect directly to the wildcard agent subdomain over HTTPS
   const rootDomain = host.replace(/^www\./, '');
-  const agentOrigin = `http://${sandboxId}.agent.${rootDomain}`;
+  const agentOrigin = `https://${sandboxId}.agent.${rootDomain}`;
 
   return {
     listFilesUrl: `${agentOrigin}/list-files`,
