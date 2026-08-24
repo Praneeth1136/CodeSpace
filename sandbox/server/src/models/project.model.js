@@ -9,7 +9,12 @@ const projectSchema = new mongoose.Schema({
         type:"String",
         default:"Untitled Project"
     },
-    
+    lastSandboxId:{
+        type: String,
+        default: null
+    }
+},{
+    timestamps: true
 })
 
 const Project = mongoose.model('project', projectSchema);

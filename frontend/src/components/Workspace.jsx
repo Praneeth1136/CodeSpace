@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { PanelLeftClose, PanelLeft, Copy, Check, X } from 'lucide-react';
+import { PanelLeftClose, PanelLeft, Copy, Check, X, ArrowLeft } from 'lucide-react';
 import FileExplorer from './FileExplorer';
 import ChatPanel from './ChatPanel';
 import TerminalPanel from './Terminal';
@@ -159,7 +159,14 @@ function DisconnectBanner({ onReconnect }) {
   );
 }
 
-export default function Workspace({ sandboxId, previewUrl, agentToken }) {
+export default function Workspace({ sandboxId, previewUrl, agentToken, onBackToLanding }) {
+  const [isLeaving, setIsLeaving] = useState(false);
+
+  const handleLeave = () => {
+    setIsLeaving(true);
+    // Allow cleanup effects to run before transitioning
+    if (onBackToLanding) onBackToLanding();
+  };
   // Panel sizes (percentages)
   const [sidebarWidth, setSidebarWidth] = useState(220);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -342,7 +349,7 @@ export default function Workspace({ sandboxId, previewUrl, agentToken }) {
   const effectiveSidebarWidth = sidebarCollapsed ? 0 : sidebarWidth;
 
   return (
-    <div className="flex flex-col h-screen w-screen" style={{ background: '#0d0d0e' }}>
+    <div className="flex flex-col h-screen w-screen workspace-view" style={{ background: '#0d0d0e' }}>
       {/* ── Header ── */}
       <header
         className="flex items-center justify-between px-3 h-10 shrink-0"
@@ -364,6 +371,21 @@ export default function Workspace({ sandboxId, previewUrl, agentToken }) {
           <span className="text-sm font-semibold" style={{ color: '#e8e6e2', fontFamily: 'var(--font-sans)' }}>
             CodeSpace
           </span>
+
+          {onBackToLanding && (
+            <button
+              onClick={handleLeave}
+              disabled={isLeaving}
+              className="flex items-center gap-1.5 px-2 py-1 rounded text-xs cursor-pointer transition-colors duration-100"
+              style={{ background: '#1a1a1d', border: '1px solid #232326', color: '#8a8a8f', marginLeft: '8px' }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3a3a3e'; e.currentTarget.style.color = '#e8e6e2'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#232326'; e.currentTarget.style.color = '#8a8a8f'; }}
+              title="Back to Dashboard"
+            >
+              <ArrowLeft size={12} />
+              Dashboard
+            </button>
+          )}
         </div>
 
         {/* Sandbox ID */}

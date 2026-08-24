@@ -46,6 +46,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -54,7 +55,6 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-bg-base);
   color: var(--color-text-primary);
-  overflow: hidden;
   height: 100vh;
   width: 100vw;
 }
@@ -62,7 +62,17 @@ body {
 #root {
   height: 100vh;
   width: 100vw;
+}
+
+/* ── Workspace-specific overflow lock ── */
+.workspace-view {
   overflow: hidden;
+}
+
+/* ── Landing page scrollable ── */
+.landing-view {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ── Scrollbar styling ── */
@@ -104,6 +114,264 @@ body {
   border-radius: 3px;
 }
 
+/* ═══════════════════════════════════════
+   LANDING PAGE ANIMATIONS & STYLES
+   ═══════════════════════════════════════ */
+
+/* ── Anti-flicker loading screen ── */
+@keyframes logo-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.95); }
+}
+
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background: #0d0d0e;
+}
+
+.loading-logo {
+  animation: logo-pulse 2s ease-in-out infinite;
+}
+
+/* ── Hero gradient animation ── */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    #0d0d0e 0%,
+    #1a1510 25%,
+    #0d0d0e 50%,
+    #10151a 75%,
+    #0d0d0e 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* ── Animated gradient text ── */
+@keyframes text-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #e8e6e2 0%,
+    #e0a34e 25%,
+    #eab566 50%,
+    #e0a34e 75%,
+    #e8e6e2 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: text-shimmer 4s linear infinite;
+}
+
+/* ── Float animation for decorative elements ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.float-slow { animation: float 6s ease-in-out infinite; }
+.float-medium { animation: float 4s ease-in-out infinite; }
+.float-fast { animation: float 3s ease-in-out infinite; }
+
+/* ── Fade-in-up for scroll entrance ── */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.animate-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.animate-delay-3 { animation-delay: 0.3s; opacity: 0; }
+.animate-delay-4 { animation-delay: 0.4s; opacity: 0; }
+.animate-delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+/* ── Glassmorphism cards ── */
+.glass-card {
+  background: rgba(21, 21, 23, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(35, 35, 38, 0.8);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(224, 163, 78, 0.3);
+  background: rgba(26, 26, 29, 0.8);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(224, 163, 78, 0.1);
+}
+
+/* ── Project cards ── */
+.project-card {
+  background: #151517;
+  border: 1px solid #232326;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.project-card:hover {
+  border-color: #3a3a3e;
+  background: #1a1a1d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Status badges ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-running {
+  background: rgba(123, 169, 138, 0.12);
+  color: #7ba98a;
+}
+
+.status-waking {
+  background: rgba(212, 168, 67, 0.12);
+  color: #d4a843;
+}
+
+.status-stopped {
+  background: rgba(90, 90, 95, 0.12);
+  color: #8a8a8f;
+}
+
+/* ── Glow orbs (hero background) ── */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.glow-orb-amber {
+  background: #e0a34e;
+}
+
+.glow-orb-blue {
+  background: #6a9fc9;
+}
+
+/* ── Google sign-in button ── */
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.google-btn-primary {
+  background: #e0a34e;
+  color: #0d0d0e;
+}
+
+.google-btn-primary:hover {
+  background: #eab566;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(224, 163, 78, 0.3);
+}
+
+.google-btn-outline {
+  background: transparent;
+  color: #e8e6e2;
+  border: 1px solid #3a3a3e;
+}
+
+.google-btn-outline:hover {
+  border-color: #e0a34e;
+  background: rgba(224, 163, 78, 0.08);
+}
+
+/* ── Profile dropdown ── */
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: #1a1a1d;
+  border: 1px solid #232326;
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  animation: fade-in-up 0.15s ease-out;
+}
+
+/* ── Navbar ── */
+.landing-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(13, 13, 14, 0.8);
+  border-bottom: 1px solid rgba(35, 35, 38, 0.6);
+}
+
+/* ── Delete confirmation ── */
+@keyframes slide-down {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 80px; }
+}
+
+.delete-confirm {
+  animation: slide-down 0.2s ease-out;
+  overflow: hidden;
+}
+
+/* ── Step connector lines ── */
+.step-connector {
+  position: absolute;
+  top: 20px;
+  left: calc(50% + 24px);
+  width: calc(100% - 48px);
+  height: 2px;
+  background: linear-gradient(90deg, #e0a34e, #3a3a3e);
+  opacity: 0.3;
+}
+
 /* ── Toast animations ── */
 @keyframes toast-in {
   from {
@@ -131,4 +399,14 @@ body {
 @keyframes pulse-amber {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+}
+
+/* ── Status dot pulse for running pods ── */
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(123, 169, 138, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(123, 169, 138, 0); }
+}
+
+.status-dot-running {
+  animation: status-pulse 2s ease-in-out infinite;
 }

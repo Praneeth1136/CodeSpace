@@ -61,4 +61,9 @@ export function startPodCleanupCron() {
     }, 60000);
 }
 
+export async function deleteSandboxKeys(sandboxId) {
+    await redis.del(`sandbox:${sandboxId}`);
+    await redis.zrem('sandbox_expirations', sandboxId);
+}
+
 export { redis };

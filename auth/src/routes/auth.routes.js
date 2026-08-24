@@ -57,6 +57,33 @@ router.get("/google/callback",passport.authenticate("google",{
     }
 });
 
+router.get("/me", async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: "Not authenticated" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId).select("displayName email photoUrl");
+
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({
+            user: {
+                _id: user._id,
+                displayName: user.displayName,
+                email: user.email,
+                photoUrl: user.photoUrl
+            }
+        });
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+    }
+});
+
 router.get("/logout",(req,res)=>{
     res.clearCookie("token", {
         httpOnly: true,
