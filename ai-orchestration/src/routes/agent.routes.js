@@ -6,7 +6,7 @@ const agentRouter  = Router();
 
 agentRouter.post("/invoke",async(req,res)=>{
     try{
-        const{message, sandboxId} = req.body;
+        const{message, sandboxId, agentToken} = req.body;
         res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -18,8 +18,9 @@ agentRouter.post("/invoke",async(req,res)=>{
         }]},
     {
         version: "v2",
-        context:{
-            sandboxId
+        configurable:{
+            sandboxId,
+            agentToken
         }
     });
     for await(const chunk of stream){

@@ -483,7 +483,7 @@ function PublicLanding() {
 //  DASHBOARD (Authenticated)
 // ═══════════════════════════════════════════
 function Dashboard({ user, onSandboxCreated, onLogout }) {
-  const [loading, setLoading] = useState(false);
+  const [startingId, setStartingId] = useState(null); // Tracks which sandbox is starting ('new' for creation, or projectId)
   const [error, setError] = useState(null);
   const [projects, setProjects] = useState([]);
   const [newProjectTitle, setNewProjectTitle] = useState('');
@@ -520,7 +520,7 @@ function Dashboard({ user, onSandboxCreated, onLogout }) {
   };
 
   const startSandbox = async (projectId) => {
-    setLoading(true);
+    setStartingId(projectId);
     setError(null);
     try {
       const res = await fetch('/api/sandbox/start', {
@@ -534,13 +534,13 @@ function Dashboard({ user, onSandboxCreated, onLogout }) {
       onSandboxCreated(data.sandboxId, data.previewUrl, data.agentToken);
     } catch (err) {
       setError(err.message || 'Failed to start sandbox');
-      setLoading(false);
+      setStartingId(null);
     }
   };
 
   const createAndStartSandbox = async () => {
     if (!newProjectTitle.trim()) { setError('Please enter a project title'); return; }
-    setLoading(true);
+    setStartingId('new');
     setError(null);
     try {
       const projectRes = await fetch('/api/sandbox/project', {
@@ -554,7 +554,7 @@ function Dashboard({ user, onSandboxCreated, onLogout }) {
       await startSandbox(projectData.project._id);
     } catch (err) {
       setError(err.message || 'Failed to create sandbox');
-      setLoading(false);
+      setStartingId(null);
     }
   };
 
@@ -669,13 +669,13 @@ function Dashboard({ user, onSandboxCreated, onLogout }) {
               onKeyDown={(e) => { if (e.key === 'Enter') createAndStartSandbox(); }}
               className="flex-1 px-4 py-2.5 rounded-lg text-sm outline-none transition-colors"
               style={{ background: '#0d0d0e', border: '1px solid #2a2a2e', color: '#e8e6e2' }}
-              disabled={loading}
+              disabled={startingId !== null}
             />
-            <button onClick={createAndStartSandbox} disabled={loading}
+            <button onClick={createAndStartSandbox} disabled={startingId !== null}
               className="flex items-center justify-center px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-120 cursor-pointer disabled:opacity-70 disabled:cursor-wait"
               style={{ background: '#e0a34e', color: '#0d0d0e', border: 'none' }}
             >
-              {loading ? <Loader2 size={16} className="animate-spin" /> : <><Plus size={16} className="mr-2"/>Create & Launch</>}
+              {startingId === 'new' ? <Loader2 size={16} className="animate-spin" /> : <><Plus size={16} className="mr-2"/>Create & Launch</>}
             </button>
           </div>
         </div>
@@ -735,13 +735,13 @@ function Dashboard({ user, onSandboxCreated, onLogout }) {
                     >
                       <Trash2 size={13} />
                     </button>
-                    <button onClick={() => startSandbox(project._id)} disabled={loading}
+                    <button onClick={() => startSandbox(project._id)} disabled={startingId !== null}
                       className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-150 disabled:opacity-50 disabled:cursor-wait"
                       style={{ background: 'rgba(224,163,78,0.1)', border: '1px solid rgba(224,163,78,0.2)', color: '#e0a34e' }}
                       onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(224,163,78,0.18)'}
                       onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(224,163,78,0.1)'}
                     >
-                      {loading ? <Loader2 size={12} className="animate-spin" /> : <>{project.status === 'running' ? 'Open' : 'Launch'}<ArrowRight size={12} /></>}
+                      {startingId === project._id ? <Loader2 size={12} className="animate-spin" /> : <>{project.status === 'running' ? 'Open' : 'Launch'}<ArrowRight size={12} /></>}
                     </button>
                   </div>
                 </div>

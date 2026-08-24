@@ -26,7 +26,7 @@ app.use(morgan("dev"));
 
 // Authentication Middleware
 app.use((req, res, next) => {
-    if (req.path === "/") return next();
+    if (req.path === "/" || req.path === "/health") return next();
     
     const token = req.headers.authorization?.split(' ')[1] || req.query.token;
     
@@ -35,6 +35,10 @@ app.use((req, res, next) => {
     }
     
     next();
+});
+
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
 });
 
 app.get("/", (req,res) => {

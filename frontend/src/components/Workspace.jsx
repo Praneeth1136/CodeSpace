@@ -477,7 +477,7 @@ export default function Workspace({ sandboxId, previewUrl, agentToken, onBackToL
               {showFileViewer && activeTab ? (
                 <FileViewer content={fileContents[activeTab]} fileName={activeTab} />
               ) : (
-                <ChatPanel sandboxId={sandboxId} />
+                <ChatPanel sandboxId={sandboxId} agentToken={agentToken} />
               )}
             </div>
           </div>

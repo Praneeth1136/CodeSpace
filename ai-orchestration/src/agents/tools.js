@@ -3,17 +3,20 @@ import { tool } from "langchain";
 import * as z from "zod"
 
 export const listFiles = tool(
-    async ({ sandboxId }) => {
+    async ({ sandboxId }, config) => {
         console.log("===================");
         console.log("Using list Files Tool");
         console.log("===================");
         try {
-            const response = await axios.get(`http://sandbox-service-${sandboxId}:3000/list-files`);
+            const agentToken = config.configurable?.agentToken;
+            const response = await axios.get(`http://sandbox-service-${sandboxId}:3000/list-files`, {
+                headers: { Authorization: `Bearer ${agentToken}` }
+            });
 
             console.log("===================");
             console.log("Response from list files tool:", response.data.files);
             console.log("===================");
-            return response.data.files;
+            return JSON.stringify(response.data.files);
         } catch (error) {
             return `Error: ${error.message}`;
         }
@@ -27,17 +30,19 @@ export const listFiles = tool(
 )
 
 export const readFiles = tool(
-    async ({ sandboxId, files }) => {
+    async ({ sandboxId, files }, config) => {
 
         console.log("===================");
         console.log("Using Read Files Tool");
         console.log("===================");
 
         try {
+            const agentToken = config.configurable?.agentToken;
             const response = await axios.get(`http://sandbox-service-${sandboxId}:3000/read-files`, {
                 params: {
                     files: files.join(","),
-                }
+                },
+                headers: { Authorization: `Bearer ${agentToken}` }
             });
 
             console.log("==================");
@@ -59,15 +64,18 @@ export const readFiles = tool(
 
 
 export const createFiles = tool(
-    async ({ sandboxId, file }) => {
+    async ({ sandboxId, file }, config) => {
 
         console.log("===================");
         console.log("Using create Files Tool");
         console.log("===================");
 
         try {
+            const agentToken = config.configurable?.agentToken;
             const response = await axios.post(`http://sandbox-service-${sandboxId}:3000/create-files`, {
                 files: file,
+            }, {
+                headers: { Authorization: `Bearer ${agentToken}` }
             });
 
             console.log("===================");
@@ -93,15 +101,18 @@ export const createFiles = tool(
 
 
 export const updateFiles = tool(
-    async ({ sandboxId, updates }) => {
+    async ({ sandboxId, updates }, config) => {
 
         console.log("===================");
         console.log("Using update Files Tool");
         console.log("===================");
 
         try {
+            const agentToken = config.configurable?.agentToken;
             const response = await axios.patch(`http://sandbox-service-${sandboxId}:3000/update-files`, {
                 updates: updates,
+            }, {
+                headers: { Authorization: `Bearer ${agentToken}` }
             });
 
             console.log("===================");

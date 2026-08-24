@@ -180,7 +180,7 @@ function ChatMessage({ message }) {
   );
 }
 
-export default function ChatPanel({ sandboxId }) {
+export default function ChatPanel({ sandboxId, agentToken }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -210,7 +210,7 @@ export default function ChatPanel({ sandboxId }) {
       const res = await fetch('/api/ai/invoke', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, sandboxId }),
+        body: JSON.stringify({ message: text, sandboxId, agentToken }),
       });
 
       if (!res.ok) throw new Error(`Server error: ${res.status}`);

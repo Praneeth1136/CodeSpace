@@ -3,6 +3,20 @@ import chokidar from 'chokidar';
 import { S3Client, PutObjectCommand, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import fs from 'fs';
 import path from 'path';
+import http from 'http';
+
+// Simple HTTP server for Kubernetes health probes
+http.createServer((req, res) => {
+    if (req.url === '/health') {
+        res.writeHead(200);
+        res.end('OK');
+    } else {
+        res.writeHead(404);
+        res.end();
+    }
+}).listen(4000, () => {
+    console.log("Health check server listening on port 4000");
+});
 
 const s3Client = new S3Client({
     region: process.env.AWS_REGION,
